@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CampusConnect — Your College Event & Certificate Management Portal" />
+    <title>CampusConnect — College Event Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Dev-only: surface runtime errors to console instead of writing into the DOM
+      try {
+        window.__showError = (msg) => { console.error('Runtime Error:', msg); };
+        window.onerror = (message, source, lineno, colno, error) => { window.__showError(error?.stack || message); };
+        window.addEventListener('unhandledrejection', (e) => { window.__showError(e.reason?.stack || e.reason); });
+        const origErr = console.error;
+        console.error = function(...args){ try { window.__showError(args.map(a => (a && a.stack) ? a.stack : String(a)).join(' ')); } catch(e){}; origErr.apply(console, args); };
+      } catch(e) {}
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

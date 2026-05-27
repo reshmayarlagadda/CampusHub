@@ -1,40 +1,75 @@
 const Student = require('../models/Student');
 const fs = require('fs');
+const path = require('path');
 const csv = require('csv-parser');
+
+const deleteUploadedFile = async (filePath) => {
+  try {
+    await fs.promises.unlink(filePath);
+  } catch (err) {
+    console.error('Failed to delete uploaded CSV:', err.message);
+  }
+};
 
 // Upload CSV and seed student records
 exports.uploadStudentCSV = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No CSV file uploaded' });
 
+  const filePath = path.isAbsolute(req.file.path)
+    ? req.file.path
+    : path.join(__dirname, '..', req.file.path);
   const results = [];
   const errors = [];
 
-  fs.createReadStream(req.file.path)
+  const stream = fs.createReadStream(filePath)
     .pipe(csv())
     .on('data', (row) => {
-      if (row.RegNo && row.Email) results.push(row);
+      if (row.RegNo && row.Email && row.Name) {
+        results.push({
+          RegNo: row.RegNo.trim(),
+          Name: row.Name.trim(),
+          Email: row.Email.trim().toLowerCase(),
+          Phone: row.Phone?.trim(),
+          Branch: row.Branch?.trim(),
+          Year: row.Year?.trim(),
+        });
+      } else {
+        errors.push({ row: row.RegNo || 'unknown', error: 'Missing required header values (RegNo, Name, Email)' });
+      }
     })
     .on('end', async () => {
-      let inserted = 0, skipped = 0;
+      let inserted = 0;
+      let skipped = 0;
+
       for (const row of results) {
         try {
           const exists = await Student.findOne({ $or: [{ regNo: row.RegNo }, { email: row.Email }] });
-          if (exists) { skipped++; continue; }
+          if (exists) {
+            skipped++;
+            continue;
+          }
           await Student.create({
-            regNo: row.RegNo?.trim(),
-            name: row.Name?.trim(),
-            email: row.Email?.trim().toLowerCase(),
-            phone: row.Phone?.trim(),
-            branch: row.Branch?.trim(),
-            year: row.Year?.trim(),
+            regNo: row.RegNo,
+            name: row.Name,
+            email: row.Email,
+            phone: row.Phone,
+            branch: row.Branch,
+            year: row.Year,
           });
           inserted++;
-        } catch (e) { errors.push({ row: row.RegNo, error: e.message }); }
+        } catch (e) {
+          errors.push({ row: row.RegNo, error: e.message });
+        }
       }
-      fs.unlinkSync(req.file.path);
+
+      await deleteUploadedFile(filePath);
       res.status(200).json({ success: true, message: `CSV processed. Inserted: ${inserted}, Skipped: ${skipped}`, errors });
     })
-    .on('error', (err) => res.status(500).json({ success: false, message: 'CSV parse error', error: err.message }));
+    .on('error', async (err) => {
+      console.error('CSV upload error:', err);
+      await deleteUploadedFile(filePath);
+      res.status(500).json({ success: false, message: 'CSV parse or file error', error: err.message });
+    });
 };
 
 // Get all students

@@ -7,7 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://campushub-1-jjze.onrender.com',
         changeOrigin: true,
       }
     }

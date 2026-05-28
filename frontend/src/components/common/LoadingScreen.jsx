@@ -24,7 +24,7 @@ const LoadingScreen = () => {
 
       {/* Title */}
       <h1 className="text-2xl font-extrabold mb-2 bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
-        CampusConnect
+        CampusHub
       </h1>
 
       {/* Loading Bar */}

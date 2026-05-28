@@ -1,4 +1,4 @@
-# 🎓 CampusConnect — College Event & Certificate Management System
+# 🎓 CampusHub — College Event & Certificate Management System
 
 A full-stack **MERN** application for managing college events, student registrations, attendance, and digital certificates — all in one secure, verified portal.
 
@@ -48,7 +48,7 @@ campusconnect/
 
 ```bash
 git clone <your-repo-url>
-cd campusconnect
+cd campusHub
 ```
 
 ---
@@ -226,13 +226,13 @@ RegNo,Name,Email,Phone,Branch,Year
 ### Backend
 ```bash
 cd backend
-npm start
+node server.js
 ```
 
 ### Frontend
 ```bash
 cd frontend
-npm run build
+npm run dev
 # Output in dist/ folder — deploy to Vercel/Netlify
 ```
 
@@ -244,4 +244,4 @@ MIT — Free for academic and portfolio use.
 
 ---
 
-Built with ❤️ as a full-stack MERN portfolio project.
+Built with ❤️ as a full-stack MERN project.
